@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-
-class Program
+﻿class Program
 {
     static char[,] map;
     static int playerX;
@@ -13,6 +9,10 @@ class Program
     static int baseHP = 3;
     static int hp = baseHP;
     static Dictionary<string, int> inventory = new Dictionary<string, int>();
+    static int maxSwords = 3;
+    static readonly string itemadd;
+    static List<Tuple<int, int>> enemies = new List<Tuple<int, int>>();
+    static int moveCounter = 0;
 
     static void Main()
     {
@@ -20,7 +20,6 @@ class Program
         DisplayMapAndStats();
         while (true)
         {
-            
             if (Console.KeyAvailable)
             {
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
@@ -42,13 +41,22 @@ class Program
                 {
                     dy = 1;
                 }
-                else if(keyInfo.Key == ConsoleKey.Spacebar)
+                else if (keyInfo.Key == ConsoleKey.Spacebar)
                 {
                     hp = baseHP;
                     score = score / 2;
                     LoadMap("falu.txt");
                 }
+                else if (keyInfo.Key == ConsoleKey.P)
+                {
+                    DebugAddItems(itemadd);
+                }
                 MovePlayer(dx, dy);
+                moveCounter++;
+                if (moveCounter % 2 == 0)
+                {
+                    MoveEnemies();
+                }
                 DisplayMapAndStats();
                 CheckIfDead();
             }
@@ -64,6 +72,7 @@ class Program
             int width = lines[0].Length;
 
             map = new char[height, width];
+            enemies.Clear();
 
             for (int i = 0; i < height; i++)
             {
@@ -74,6 +83,14 @@ class Program
                     {
                         playerX = i;
                         playerY = j;
+                    }
+                    else if (map[i, j] == 'x')
+                    {
+                        enemies.Add(new Tuple<int, int>(i, j));
+                    }
+                    else if (map[i, j] == 'X')
+                    {
+                        enemies.Add(new Tuple<int, int>(i, j));
                     }
                 }
             }
@@ -101,7 +118,7 @@ class Program
         }
 
         Console.ResetColor();
-        Console.WriteLine("Healt Points: " + hp);
+        Console.WriteLine("Health Points: " + hp);
         Console.WriteLine("Score: " + score);
         Console.WriteLine("Inventory: " + GetInventoryString());
         Console.WriteLine();
@@ -129,7 +146,10 @@ class Program
                 Console.ForegroundColor = ConsoleColor.Red; // Enemies
                 break;
             case 'H':
-                Console.ForegroundColor = ConsoleColor.DarkYellow; //Houses
+                Console.ForegroundColor = ConsoleColor.DarkYellow; // Houses
+                break;
+            case 'B':
+                Console.ForegroundColor = ConsoleColor.Magenta; // Blacksmith
                 break;
             default:
                 Console.ResetColor();
@@ -186,11 +206,10 @@ class Program
                 OpenShopMenu();
                 DisplayMapAndStats();
             }
-            else if (map[newX, newY] == 'U')
+            else if (map[newX, newY] == 'B')
             {
-                playerX = newX;
-                playerY = newY;
-                ObjectCheck();
+                OpenBlacksmithMenu();
+                DisplayMapAndStats();
             }
             else if (map[newX, newY] == 'o')
             {
@@ -200,26 +219,124 @@ class Program
                 playerY = newY;
                 ObjectCheck();
                 map[playerX, playerY] = '!';
-                
             }
             else if (map[newX, newY] == 'x')
-            { 
-                map[playerX, playerY] = ' ';
-                playerX = newX;
-                playerY = newY;
-                map[playerX, playerY] = '!';
-                FightSmall();
-            }
-            else if (map[newX,newY] == 'X')
             {
-                map[playerX, playerY] = ' ';
-                playerX = newX;
-                playerY = newY;
-                map[playerX, playerY] = '!';
-                FightBig();
+                bool defeated = FightSmall();
+                if (defeated)
+                {
+                    map[playerX, playerY] = ' ';
+                    playerX = newX;
+                    playerY = newY;
+                    map[playerX, playerY] = '!';
+                    enemies.Remove(new Tuple<int, int>(newX, newY));
+                }
+                CheckIfDead();
+            }
+            else if (map[newX, newY] == 'X')
+            {
+                bool defeated = FightBig();
+                if (defeated)
+                {
+                    map[playerX, playerY] = ' ';
+                    playerX = newX;
+                    playerY = newY;
+                    map[playerX, playerY] = '!';
+                    enemies.Remove(new Tuple<int, int>(newX, newY));
+                }
+                CheckIfDead();
             }
         }
     }
+
+    static bool FightSmall()
+    {
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine("A small enemy attacked you!");
+            Console.WriteLine();
+            Console.WriteLine("It has 10 health points");
+            Console.WriteLine("You have " + CalculateAttackDamage() + " attack damage.");
+            Console.ReadKey();
+            if (CalculateAttackDamage() > 10)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Clear();
+                Console.WriteLine("You defeated the small enemy!");
+                score += 5;
+                Console.WriteLine();
+                Console.WriteLine("Press any button to continue...");
+                Console.ReadKey();
+                return true;
+            }
+            else
+            {
+                if (hp - 1 > 1)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Clear();
+                    Console.WriteLine("The small enemy defeated you!");
+                    Console.WriteLine("You lost 1 health point");
+                    hp--;
+                    Console.WriteLine();
+                    Console.WriteLine("Press any button to continue...");
+                    Console.ReadKey();
+                }
+                else
+                {
+                    hp--;
+                    CheckIfDead();
+                }
+                return false;
+            }
+        }
+    }
+
+    static bool FightBig()
+    {
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine("A big enemy attacked you!");
+            Console.WriteLine();
+            Console.WriteLine("It has 25 health points");
+            Console.WriteLine("You have " + CalculateAttackDamage() + " attack damage.");
+            Console.ReadKey();
+            if (CalculateAttackDamage() > 25)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Clear();
+                Console.WriteLine("You defeated the big enemy!");
+                score += 15;
+                Console.WriteLine();
+                Console.WriteLine("Press any button to continue...");
+                Console.ReadKey();
+                return true;
+            }
+            else
+            {
+                if (hp - 3 > 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Clear();
+                    Console.WriteLine("The big enemy defeated you!");
+                    Console.WriteLine("You lost 3 health points");
+                    hp -= 3;
+                    Console.WriteLine();
+                    Console.WriteLine("Press any button to continue...");
+                    Console.ReadKey();
+                }
+                else
+                {
+                    CheckIfDead();
+                    hp -= 3;
+                }
+                return false;
+            }
+        }
+    }
+
 
     static void ObjectCheck()
     {
@@ -238,11 +355,6 @@ class Program
             LoadMap("bolt.txt");
             DisplayMapAndStats();
         }
-        else if (map[playerX, playerY] == 'U')
-        {
-            LoadMap("falubolt.txt");
-            DisplayMapAndStats();
-        }
     }
 
     static bool IsInMap(int x, int y)
@@ -257,14 +369,14 @@ class Program
             Console.Clear();
             Console.WriteLine("Welcome to the shop!");
             Console.WriteLine("Score: " + score);
-            Console.WriteLine("1. Buy Sword (5 points)");
+            Console.WriteLine("1. Buy Sword (5 points) (Max 3)");
             Console.WriteLine("2. Buy Shield (3 points)");
             Console.WriteLine("3. Buy Potion (2 points)");
             Console.WriteLine("4. Exit Shop");
             Console.Write("Enter your choice: ");
             string choice = Console.ReadLine();
 
-            if (choice == "1" && score >= 5)
+            if (choice == "1" && score >= 5 && inventory.GetValueOrDefault("Sword", 0) < maxSwords)
             {
                 score -= 5;
                 AddToInventory("Sword");
@@ -288,7 +400,7 @@ class Program
             }
             else
             {
-                Console.WriteLine("Invalid choice or not enough points.");
+                Console.WriteLine("Invalid choice or not enough points or max swords reached.");
             }
 
             Console.WriteLine("Press any key to continue...");
@@ -308,28 +420,160 @@ class Program
         }
     }
 
-
-
-    static int CalculateAttackDamage()
+    static void RemoveFromInventory(string item, int count)
     {
-        int attackDamage = baseAttackDamage;
-        if (inventory.ContainsKey("Sword"))
+        if (inventory.ContainsKey(item))
         {
-            int swordCount = inventory["Sword"];
-            attackDamage = (int)(baseAttackDamage * Math.Pow(1.5, swordCount));
+            inventory[item] -= count;
+            if (inventory[item] <= 0)
+            {
+                inventory.Remove(item);
+            }
         }
-        return attackDamage;
     }
 
-    static int CalculateArmor()
+    static void OpenBlacksmithMenu()
     {
-        int armor = baseArmor;
-        if (inventory.ContainsKey("Shield"))
+        while (true)
         {
-            armor += 10 * inventory["Shield"];
+            Console.Clear();
+            Console.WriteLine("Welcome to the blacksmith!");
+            Console.WriteLine("Here you can upgrade your tools:");
+            Console.WriteLine();
+            Console.WriteLine("1. Upgrade Sword (Requires 3 Swords)");
+            Console.WriteLine("2. Upgrade Shield (Requires 3 Shields)");
+            Console.WriteLine("3. Exit Blacksmith");
+            string choice = Console.ReadLine();
+
+            if (choice == "1" && inventory.ContainsKey("Sword") && inventory["Sword"] >= 3 || inventory.ContainsKey("Golden Sword") && inventory["Golden Sword"] >= 3 || inventory.ContainsKey("Diamond Sword") && inventory["Diamond Sword"] >= 3 || inventory.ContainsKey("Emerald Sword") && inventory["Emerald Sword"] >= 3)
+            {
+                Console.Clear();
+                Console.WriteLine("What tier do you want to upgrade your Sword?");
+                Console.WriteLine();
+                Console.WriteLine("1. Gold");
+                Console.WriteLine("2. Emerald");
+                Console.WriteLine("3. Diamond");
+                Console.WriteLine("4. Mythic Stone");
+                Console.WriteLine("5. Go back");
+                string tierchoice = Console.ReadLine();
+                if (tierchoice == "1" && inventory.ContainsKey("Sword") && inventory["Sword"] >= 3)
+                {
+                    RemoveFromInventory("Sword", 3);
+                    AddToInventory("Golden Sword");
+                    Console.WriteLine("Your swords have been upgraded to a Golden Sword!");
+                }
+                else if (tierchoice == "2" && inventory.ContainsKey("Golden Sword") && inventory["Golden Sword"] >= 3)
+                {
+                    RemoveFromInventory("Golden Sword", 3);
+                    AddToInventory("Emerald Sword");
+                    Console.WriteLine("Your swords have been upgraded to an Emerald Sword!");
+                }
+                else if (tierchoice == "3" && inventory.ContainsKey("Emerald Sword") && inventory["Emerald Sword"] >= 3)
+                {
+                    RemoveFromInventory("Emerald Sword", 3);
+                    AddToInventory("Diamond Sword");
+                    Console.WriteLine("Your swords have been upgraded to a Diamond Sword!");
+                }
+                else if (tierchoice == "4" && inventory.ContainsKey("Diamond Sword") && inventory["Diamond Sword"] >= 3)
+                {
+                    RemoveFromInventory("Diamond Sword", 3);
+                    AddToInventory("Mythic Stone Sword");
+                    Console.WriteLine("Your swords have been upgraded to a Mythic Stone Sword!");
+                }
+                else if (tierchoice == "5")
+                {
+                    break;
+                }
+            }
+            else if (choice == "2" && inventory.ContainsKey("Shield") && inventory["Shield"] >= 3 || inventory.ContainsKey("Golden Shield") && inventory["Golden Shield"] >= 3 || inventory.ContainsKey("Diamond Shield") && inventory["Diamond Shield"] >= 3 || inventory.ContainsKey("Emerald Shield") && inventory["Emerald Sword"] >= 3)
+            {
+                Console.Clear();
+                Console.WriteLine("What tier do you want to upgrade your Shield?");
+                Console.WriteLine();
+                Console.WriteLine("1. Gold");
+                Console.WriteLine("2. Emerald");
+                Console.WriteLine("3. Diamond");
+                Console.WriteLine("4. Mythic Stone");
+                Console.WriteLine("5. Go back");
+                string tierchoice = Console.ReadLine();
+                if (tierchoice == "1" && inventory.ContainsKey("Shield") && inventory["Shield"] >= 3)
+                {
+                    RemoveFromInventory("Shield", 3);
+                    AddToInventory("Golden Shield");
+                    Console.WriteLine("Your Shields have been upgraded to a Golden Shield!");
+                }
+                else if (tierchoice == "2" && inventory.ContainsKey("Golden Shield") && inventory["Golden Shield"] >= 3)
+                {
+                    RemoveFromInventory("Golden Shield", 3);
+                    AddToInventory("Emerald Shield");
+                    Console.WriteLine("Your Shields have been upgraded to an Emerald Shield!");
+                }
+                else if (tierchoice == "3" && inventory.ContainsKey("Emerald Shield") && inventory["Emerald Shield"] >= 3)
+                {
+                    RemoveFromInventory("Emerald Shield", 3);
+                    AddToInventory("Diamond Shield");
+                    Console.WriteLine("Your Shields have been upgraded to a Diamond Shield!");
+                }
+                else if (tierchoice == "4" && inventory.ContainsKey("Diamond Shield") && inventory["Diamond Shield"] >= 3)
+                {
+                    RemoveFromInventory("Diamond Shield", 3);
+                    AddToInventory("Mythic Stone Shield");
+                    Console.WriteLine("Your Shields have been upgraded to a Mythic Stone Shield!");
+                }
+                else if (tierchoice == "5")
+                {
+                    break;
+                }
+            }
+            else if (choice == "3")
+            {
+                break;
+            }
+            else
+            {
+                Console.WriteLine("Invalid choice or not enough items to upgrade.");
+            }
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
         }
-        return armor;
     }
+
+
+    static void MoveEnemies()
+    {
+        List<Tuple<int, int>> newEnemies = new List<Tuple<int, int>>();
+        HashSet<Tuple<int, int>> occupiedPositions = new HashSet<Tuple<int, int>>();
+
+        foreach (var enemy in enemies)
+        {
+            int enemyX = enemy.Item1;
+            int enemyY = enemy.Item2;
+            char enemyType = map[enemyX, enemyY];
+            int dx = 0, dy = 0;
+
+            if (enemyX < playerX) dx = 1;
+            else if (enemyX > playerX) dx = -1;
+
+            if (enemyY < playerY) dy = 1;
+            else if (enemyY > playerY) dy = -1;
+
+            int newX = enemyX + dx;
+            int newY = enemyY + dy;
+
+            if (IsInMap(newX, newY) && map[newX, newY] == ' ' && !occupiedPositions.Contains(new Tuple<int, int>(newX, newY)))
+            {
+                map[enemyX, enemyY] = ' ';
+                enemyX = newX;
+                enemyY = newY;
+            }
+
+            newEnemies.Add(new Tuple<int, int>(enemyX, enemyY));
+            occupiedPositions.Add(new Tuple<int, int>(enemyX, enemyY));
+            map[enemyX, enemyY] = enemyType;
+        }
+        enemies = newEnemies;
+    }
+
 
     static void CheckIfDead()
     {
@@ -358,84 +602,78 @@ class Program
             }
         }
     }
-    static void FightSmall()
+
+
+    static void DebugAddItems(string itemadd)
     {
         while (true)
         {
             Console.Clear();
-            Console.WriteLine("A small enemy attacked you!");
-            Console.WriteLine("It has 10 health point");
-            Console.WriteLine(Environment.NewLine + "You have " + CalculateAttackDamage() + " attack damage.");
-            if (CalculateAttackDamage() > 10)
-            {
-                Console.ForegroundColor= ConsoleColor.Green;
-                Console.WriteLine();
-                Console.WriteLine("You defeated the small enemy!");
-                score += 5;
-                Console.WriteLine("Press any button to continue...");
-                Console.ReadKey();
-                break;
-            }
-            else
-            {
-                if (hp - 1 > 1)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine();
-                    Console.WriteLine("The small enemy defeated you!");
-                    Console.WriteLine("You lost 1 health point");
-                    hp--;
-                    Console.WriteLine("Press any button to continue...");
-                    Console.ReadKey();
-                }
-                else
-                {
-                    hp --;
-                    CheckIfDead();
-                }
-                break;
-            }
-        }
-    }
-    static void FightBig()
-    {
-        while (true)
-        {
-            Console.Clear();
-            Console.WriteLine("A big enemy attacked you!");
-            Console.WriteLine("It has 25 health point");
-            Console.WriteLine(Environment.NewLine + "You have " + CalculateAttackDamage() + " attack damage.");
-            if (CalculateAttackDamage() > 25)
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine();
-                Console.WriteLine("You defeated the big enemy!");
-                score += 15;
-                Console.WriteLine("Press any button to continue...");
-                Console.ReadKey();
-                break;
-            }
-            else
-            {
-                if (hp - 3 > 0)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine();
-                    Console.WriteLine("The big enemy defeated you!");
-                    Console.WriteLine("You lost 3 health point");
-                    hp = hp - 3;
-                    Console.WriteLine("Press any button to continue...");
-                    Console.ReadKey();
-                    break;
-                }
-                else
-                {
-                    CheckIfDead();
-                    hp = hp - 3;
-                }
-                break;
-            }
+            itemadd = Console.ReadLine();
+            AddToInventory(itemadd);
+            break;
         }
     }
 
+    static int CalculateAttackDamage()
+    {
+        int attackDamage = baseAttackDamage;
+        if (inventory.ContainsKey("Sword"))
+        {
+            int swordCount = inventory["Sword"];
+            attackDamage = (int)(baseAttackDamage + (5 * swordCount));
+        }
+        if (inventory.ContainsKey("Golden Sword"))
+        {
+            int swordCount = inventory["Golden Sword"];
+            attackDamage = (int)(baseAttackDamage + (20 * swordCount));
+        }
+        if (inventory.ContainsKey("Diamond Sword"))
+        {
+            int swordCount = inventory["Diamond Sword"];
+            attackDamage = (int)(baseAttackDamage + (75 * swordCount));
+        }
+        if (inventory.ContainsKey("Emerald Sword"))
+        {
+            int swordCount = inventory["Emerald Sword"];
+            attackDamage = (int)(baseAttackDamage + (200 * swordCount));
+        }
+        if (inventory.ContainsKey("Mythic Stone Sword"))
+        {
+            int swordCount = inventory["Mythic Stone Sword"];
+            attackDamage = (int)(baseAttackDamage + (750 * swordCount));
+        }
+        return attackDamage;
+    }
+
+    static int CalculateArmor()
+    {
+        int armor = baseArmor;
+        if (inventory.ContainsKey("Shield"))
+        {
+            int armorCount = inventory["Shield"];
+            armor = (int)(baseArmor + (1 * armorCount));
+        }
+        if (inventory.ContainsKey("Golden Shield"))
+        {
+            int armorCount = inventory["Golden Shield"];
+            armor = (int)(baseArmor + (5 * armorCount));
+        }
+        if (inventory.ContainsKey("Diamond Shield"))
+        {
+            int armorCount = inventory["Diamond Shield"];
+            armor = (int)(baseArmor + (20 * armorCount));
+        }
+        if (inventory.ContainsKey("Emerald Shield"))
+        {
+            int armorCount = inventory["Emerald Shield"];
+            armor = (int)(baseArmor + (75 * armorCount));
+        }
+        if (inventory.ContainsKey("Mythic Stone Shield"))
+        {
+            int armorCount = inventory["Mythic Stone Shield"];
+            armor = (int)(baseArmor + (250 * armorCount));
+        }
+        return armor;
+    }
 }
