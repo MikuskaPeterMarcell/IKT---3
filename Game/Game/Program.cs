@@ -10,9 +10,14 @@
     static int hp = baseHP;
     static Dictionary<string, int> inventory = new Dictionary<string, int>();
     static int maxSwords = 3;
-    static readonly string itemadd;
+    static int maxPotion = 5;
+    static readonly string? itemadd;
     static List<Tuple<int, int>> enemies = new List<Tuple<int, int>>();
     static int moveCounter = 0;
+    static int baseMapNumber = 0;
+    static bool adPotion = false;
+    static bool armorPorion = false;
+
 
     static void Main()
     {
@@ -25,19 +30,19 @@
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 int dx = 0, dy = 0;
 
-                if (keyInfo.Key == ConsoleKey.UpArrow)
+                if (keyInfo.Key == ConsoleKey.W)
                 {
                     dx = -1;
                 }
-                else if (keyInfo.Key == ConsoleKey.DownArrow)
+                else if (keyInfo.Key == ConsoleKey.S)
                 {
                     dx = 1;
                 }
-                else if (keyInfo.Key == ConsoleKey.LeftArrow)
+                else if (keyInfo.Key == ConsoleKey.A)
                 {
                     dy = -1;
                 }
-                else if (keyInfo.Key == ConsoleKey.RightArrow)
+                else if (keyInfo.Key == ConsoleKey.D)
                 {
                     dy = 1;
                 }
@@ -50,6 +55,10 @@
                 else if (keyInfo.Key == ConsoleKey.P)
                 {
                     DebugAddItems(itemadd);
+                }
+                else if (keyInfo.Key == ConsoleKey.Q)
+                {
+                    UsePotion();
                 }
                 MovePlayer(dx, dy);
                 moveCounter++;
@@ -99,6 +108,18 @@
         {
             Console.WriteLine("Map file not found: " + filename);
         }
+    }
+
+    static void LoadNextMap()
+    {
+        baseMapNumber++;
+        LoadMap($"{baseMapNumber}.txt");
+    }
+
+    static void LoadPreviousMap() 
+    {
+        baseMapNumber--;
+        LoadMap($"{baseMapNumber}.txt");
     }
 
     static void DisplayMapAndStats()
@@ -193,13 +214,13 @@
             {
                 playerX = newX;
                 playerY = newY;
-                ObjectCheck();
+                LoadNextMap();
             }
             else if (map[newX, newY] == '[')
             {
                 playerX = newX;
                 playerY = newY;
-                ObjectCheck();
+                LoadPreviousMap();
             }
             else if (map[newX, newY] == 'S')
             {
@@ -268,6 +289,7 @@
                 Console.WriteLine();
                 Console.WriteLine("Press any button to continue...");
                 Console.ReadKey();
+                adPotion = false;
                 return true;
             }
             else
@@ -288,8 +310,10 @@
                     hp--;
                     CheckIfDead();
                 }
+                adPotion = false;
                 return false;
             }
+
         }
     }
 
@@ -312,6 +336,7 @@
                 Console.WriteLine();
                 Console.WriteLine("Press any button to continue...");
                 Console.ReadKey();
+                adPotion = false;
                 return true;
             }
             else
@@ -332,6 +357,7 @@
                     CheckIfDead();
                     hp -= 3;
                 }
+                adPotion = false;
                 return false;
             }
         }
@@ -342,12 +368,12 @@
     {
         if (map[playerX, playerY] == ']')
         {
-            LoadMap("banya3.txt");
+            LoadNextMap();
             DisplayMapAndStats();
         }
         else if (map[playerX, playerY] == '[')
         {
-            LoadMap("faluvissza.txt");
+            LoadPreviousMap();
             DisplayMapAndStats();
         }
         else if (map[playerX, playerY] == 'S')
@@ -388,11 +414,9 @@
                 AddToInventory("Shield");
                 Console.WriteLine("You bought a Shield!");
             }
-            else if (choice == "3" && score >= 2)
+            else if (choice == "3")
             {
-                score -= 2;
-                AddToInventory("Potion");
-                Console.WriteLine("You bought a Potion!");
+                PotionShopMenu();
             }
             else if (choice == "4")
             {
@@ -643,6 +667,10 @@
             int swordCount = inventory["Mythic Stone Sword"];
             attackDamage = (int)(baseAttackDamage + (750 * swordCount));
         }
+        if (adPotion == true)
+        {
+            attackDamage = attackDamage * 2;
+        }
         return attackDamage;
     }
 
@@ -675,5 +703,124 @@
             armor = (int)(baseArmor + (250 * armorCount));
         }
         return armor;
+    }
+
+    static void PotionShopMenu()
+    {
+        Console.Clear();
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine("Score: " + score);
+            Console.WriteLine();
+            Console.WriteLine("1. Regeneration Potion");
+            Console.WriteLine("2. Invisibility Potion");
+            Console.WriteLine("3. Damage Potion");
+            Console.WriteLine("4. Armor Potion");
+            Console.WriteLine("5. Exit Shop");
+            Console.Write("Enter your choice: ");
+            string choice = Console.ReadLine();
+
+            if (choice == "1" && score >= 5 && inventory.GetValueOrDefault("Regeneration Potion", 0) < maxPotion)
+            {
+                score -= 5;
+                AddToInventory("Regeneration Potion");
+                Console.WriteLine("You bought a Regeneration Potion!");
+            }
+            else if (choice == "2" && score >= 10 && inventory.GetValueOrDefault("Invisibility Potion", 0) < 1)
+            {
+                score -= 10;
+                AddToInventory("Invisibility Potion");
+                Console.WriteLine("You bought an Invisibility Potion!");
+            }
+            else if (choice == "3" && score >= 8 && inventory.GetValueOrDefault("Damage Potion", 0) < maxPotion)
+            {
+                score -= 8;
+                AddToInventory("Damage Potion");
+                Console.WriteLine("You bought a Damage Potion!");
+            }
+            else if (choice == "4" && score >= 8 && inventory.GetValueOrDefault("Armor Potion", 0) < maxPotion)
+            {
+                score -= 8;
+                AddToInventory("Armor Potion");
+                Console.WriteLine("You bought an Armor Potion!");
+            }
+            else if(choice == "5")
+            {
+                break;
+            }
+            else
+            {
+                Console.WriteLine("Invalid choice or not enough points or max potions reached.");
+            }
+
+            Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+        }
+    }
+
+    static void UsePotion()
+    {
+        Console.Clear();
+        Console.WriteLine("What Potions do you want to use?");
+        Console.WriteLine();
+        Console.WriteLine("1. Regeneration Potion");
+        Console.WriteLine("2. Invisibility Potion");
+        Console.WriteLine("3. Damage Potion");
+        Console.WriteLine("4. Armor Potion");
+        Console.WriteLine("5. Exit");
+        Console.WriteLine();
+        string choice = Console.ReadLine();
+        if (choice == "1" && inventory.ContainsKey("Regeneration Potion") && inventory["Regeneration Potion"] >= 1)
+        {
+            hp++;
+            RemoveFromInventory("Regeneration Potion", 1);
+            Console.Clear();
+            Console.WriteLine("You used up a Regeneration Potion!");
+            Console.WriteLine();
+            Console.WriteLine("New health point: " + hp);
+            Console.WriteLine();
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+        }
+        else if (choice == "2" && inventory.ContainsKey("Invisibility Potion") && inventory["Invisibility Potion"] >= 1)
+        {
+            hp++;
+            RemoveFromInventory("Invisibility Potion", 1);
+            Console.Clear();
+            Console.WriteLine("You used up a Invisibility Potion!");
+            Console.WriteLine();
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+        }
+        else if (choice == "3" && inventory.ContainsKey("Damage Potion") && inventory["Damage Potion"] >= 1)
+        {
+            RemoveFromInventory("Damage Potion", 1);
+            Console.Clear();
+            Console.WriteLine("You used up a Damage Potion!");
+            Console.WriteLine();
+            adPotion = true;
+            Console.WriteLine("New Attack Damage for a fight: " + CalculateAttackDamage());
+            Console.WriteLine();
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+        }
+        else if (choice == "4" && inventory.ContainsKey("Armor Potion") && inventory["Armor Potion"] >= 1)
+        {
+            hp++;
+            RemoveFromInventory("Armor Potion", 1);
+            Console.Clear();
+            Console.WriteLine("You used up a Armor Potion!");
+            Console.WriteLine();
+            Console.WriteLine("New health point: " + hp);
+            Console.WriteLine();
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+        }
+        else if (choice == "5")
+        {
+            Console.WriteLine("Invalid choice or not enough points or max potions reached.");
+            Console.ReadKey();
+        }
     }
 }

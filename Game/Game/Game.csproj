@@ -8,7 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="banya3.txt">
+    <ProjectReference Include="..\Game_Lib\Game_Lib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="falu.txt">
@@ -20,7 +24,7 @@
     <None Update="faluboltvissza.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="faluvissza.txt">
+    <None Update="0.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="meghalt.txt">

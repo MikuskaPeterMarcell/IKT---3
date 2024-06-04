@@ -13,8 +13,12 @@ C:\Users\bardo\Desktop\Game\Game\obj\Debug\net8.0\refint\Game.dll
 C:\Users\bardo\Desktop\Game\Game\obj\Debug\net8.0\Game.pdb
 C:\Users\bardo\Desktop\Game\Game\obj\Debug\net8.0\Game.genruntimeconfig.cache
 C:\Users\bardo\Desktop\Game\Game\obj\Debug\net8.0\ref\Game.dll
-C:\Users\bardo\Desktop\Game\Game\bin\Debug\net8.0\banya3.txt
-C:\Users\bardo\Desktop\Game\Game\bin\Debug\net8.0\faluvissza.txt
 C:\Users\bardo\Desktop\Game\Game\bin\Debug\net8.0\falubolt.txt
 C:\Users\bardo\Desktop\Game\Game\bin\Debug\net8.0\meghalt.txt
 C:\Users\bardo\Desktop\Game\Game\bin\Debug\net8.0\faluboltvissza.txt
+C:\Users\bardo\Desktop\Game\Game\bin\Debug\net8.0\Game_Lib.dll
+C:\Users\bardo\Desktop\Game\Game\bin\Debug\net8.0\Game_Lib.pdb
+C:\Users\bardo\Desktop\Game\Game\obj\Debug\net8.0\Game.csproj.AssemblyReference.cache
+C:\Users\bardo\Desktop\Game\Game\obj\Debug\net8.0\Game.csproj.Up2Date
+C:\Users\bardo\Desktop\Game\Game\bin\Debug\net8.0\0.txt
+C:\Users\bardo\Desktop\Game\Game\bin\Debug\net8.0\1.txt
