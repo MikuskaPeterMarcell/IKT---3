@@ -1,4 +1,5 @@
-﻿class Program
+﻿using Game_Lib;
+class Program
 {
     static char[,] map;
     static int playerX;
@@ -17,12 +18,30 @@
     static int baseMapNumber = 0;
     static bool adPotion = false;
     static bool armorPorion = false;
+    
 
 
     static void Main()
     {
+        Load game = new Load(); // Betölti a mentést ha van és kiírja, ill ha nincs csinál eggyet
+        Save stats = game.LoadGame(); //elmenti a betölött mentés állását
+        foreach(var item in stats.Inventory.Split(','))
+        {
+            string itemName = item.Split("x")[0].Trim();
+            int itemNum = int.Parse(item.Split("x")[1]);
+            if (itemName != "Empty")
+            {
+                for (int i = 0; i < itemNum; i++)
+                {
+                    AddToInventory(itemName);
+                }
+            }
+        }
+        score = stats.Score;
+        hp = stats.Hp;
+        
         LoadMap("falu.txt");
-        DisplayMapAndStats();
+        //DisplayMapAndStats();
         while (true)
         {
             if (Console.KeyAvailable)
@@ -59,6 +78,12 @@
                 else if (keyInfo.Key == ConsoleKey.Q)
                 {
                     UsePotion();
+                }
+                else if (keyInfo.Key == ConsoleKey.X)
+                {
+                    Save gameState = new Save(GetInventoryString(), score, hp);
+                    gameState.SaveGame();
+                    System.Environment.Exit(1);
                 }
                 MovePlayer(dx, dy);
                 moveCounter++;
