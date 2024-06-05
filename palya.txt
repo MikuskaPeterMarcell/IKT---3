@@ -1,8 +1,0 @@
-Pálya felépítése:
-
-A pálya felülnézetes mátrixból fog állni, ahol ha a szélére ér a karakter 
-átmegy egy másik mátrixra ami kapcsolódik az előzőhöz. (szoba rendszer szerint) 
-A falak és a bánya széle #-gel lesz jelölve, azon nem lehet átmenni. A bizonyos 
-szörnyek más-más karakterrel lesznek jelölve pl.: x, o, X. Egy-egy pályarész 20x20-as 
-lesz. A boltot és egyéb interakciós pontot egy “!”-fog jelölni. Ha küldetéshez ér a 
-játékos azt egy “?” fogja jelezni. Maga a játékos egy “O”-lesz.

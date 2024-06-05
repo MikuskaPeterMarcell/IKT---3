@@ -1,0 +1,22 @@
+Szörnyek: 	
+
+Rabló gyíkember
+	sebzés:	közepes
+	életerő:	magas
+	kapott pénz:	közepes
+	szinttől függően gyengén nő az ereje
+Pók
+	sebzés:	kevés
+	életerő:	kevés
+	kapott pénz:	kevés
+	szinttől függően gyengén nő az ereje
+Ellenséges bányászok
+	sebzés:	magas
+	életerő:	közepes
+	kapott pénz:	magas
+	szinttől függően erősen nő az ereje
+Óriás gnóm
+	sebzés:	magas
+	életerő:	magas
+	kapott pénz:	hatalmas
+	szinttől függően nő az ereje

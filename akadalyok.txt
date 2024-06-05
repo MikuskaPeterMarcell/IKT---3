@@ -1,7 +1,0 @@
-Akadályok:
-
-
-Fal:
-Nem lehet rajta átmenni.
-Szörnyek:
-Hátráltatják a játékost hogy elérje célját.
