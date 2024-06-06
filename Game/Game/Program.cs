@@ -359,7 +359,6 @@ class Program
             Console.ReadKey();
             if (CalculateAttackDamage() > 25)
             {
-                tasks.LargeEnemyDead++;
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Clear();
                 Console.WriteLine("You defeated the big enemy!");
