@@ -17,12 +17,12 @@ namespace Game_Lib
         
         public Quest(string task,string difficulty,string reward,int ammount)
         {
-            string[] reward = reward.Trim(" ").Split(" ");
+            string[] rewards = reward.Trim().Split(" ");
             Task = task;
             Ammount = ammount;
             Difficulty = difficulty;
             RewardAmmount = reward[0];
-            RewardName = reward[1];
+            RewardName = reward[1].ToString();
         }
         
     }

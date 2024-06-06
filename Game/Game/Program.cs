@@ -18,14 +18,14 @@ class Program
     static int baseMapNumber = 0;
     static bool adPotion = false;
     static bool armorPorion = false;
-    
 
+    Quests tasks = new(File.ReadAllLines("feladatok.txt"));
 
     static void Main()
     {
-        Load game = new Load(); // Betölti a mentést ha van és kiírja, ill ha nincs csinál eggyet
-        Save stats = game.LoadGame(); //elmenti a betölött mentés állását
-        foreach(var item in stats.Inventory.Split(','))
+        Load game = new Load(); 
+        Save stats = game.LoadGame(); // Betölti a mentést ha van és kiírja, ill ha nincs csinál eggyet
+        foreach (var item in stats.Inventory.Split(','))
         {
             string itemName = item.Split("x")[0].Trim();
             int itemNum = int.Parse(item.Split("x")[1]);
@@ -40,7 +40,7 @@ class Program
         score = stats.Score;
         hp = stats.Hp;
 
-        Kuldetesek kuldetesek = new(File.ReadAllLines("feladatok.txt"));
+        
 
         LoadMap("falu.txt");
         //DisplayMapAndStats();
@@ -350,6 +350,7 @@ class Program
     {
         while (true)
         {
+            
             Console.Clear();
             Console.WriteLine("A big enemy attacked you!");
             Console.WriteLine();
@@ -358,6 +359,7 @@ class Program
             Console.ReadKey();
             if (CalculateAttackDamage() > 25)
             {
+                tasks.LargeEnemyDead++;
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Clear();
                 Console.WriteLine("You defeated the big enemy!");
