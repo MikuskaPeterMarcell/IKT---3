@@ -9,13 +9,10 @@
              -Farkas Botond 
              -Pongrácz Gábor
 
-A játékunkat C# nyelvben irtuk meg Consolosan.
+Ez egy Consolos játék amit **C#** nyelvben irtuk meg.
 
-A játékunk számos kihívással rendelkezik, amivel a játékos egy izgalmas játékmenetet tud élvezni.
-
-**Játékmenete:**
--Megnyilik a játék.
--Ha van betölthető mentés akkor a mentésnek a betőltése.
--A játékon belül a "W,A,S,D" billentyükkel tud a játékos mozogni.
--A különböző jelölések, hogy mi mit jelent azt megtalálja a dokumentációban.
--Ha mindennel kész van már élvezheti is a játékot.
+**Hogyan müködik a játék:**
+-Mentésrendszer ami betölti a legutolsó játék állapotot. 
+-Különböző karakterekkel ábrázolt pálya.
+-Amelyen a játékos szabadon tud mozogni a "W,A,S,D" billentyükkel. 
+-Interaktiv harc- és tárgyrendszer.
