@@ -221,7 +221,7 @@ class Program
         return string.Join(", ", items);
     }
 
-
+    //jatekos mozgatása
 
     static void MovePlayer(int dx, int dy)
     {
@@ -591,6 +591,7 @@ class Program
         }
     }
 
+    //ellenséges entittások mozgatása
 
     static void MoveEnemies()
     {
