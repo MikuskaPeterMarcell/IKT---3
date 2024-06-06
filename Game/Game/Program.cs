@@ -414,7 +414,7 @@ class Program
     {
         return x >= 0 && x < map.GetLength(0) && y >= 0 && y < map.GetLength(1);
     }
-
+    // Farkas Botond
     static void OpenShopMenu()
     {
         while (true)
