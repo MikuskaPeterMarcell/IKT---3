@@ -1,12 +1,10 @@
-feladat;feladat nehézsége;jutalom
-Ölj meg 10 darab gyenge ellenfelet;könnyû;Golden Sword
-Ölj meg 10 darab nehéz ellenfelet;közepes;Emerald Shield
-Szerezd meg a Diamond Swordot;nehéz;100 coin
-Szerezd meg a Diamon Shieldet;nehéz;100 coin
-Gyûjtsd össze a 10 darab ércet a bányából; könnyû;Láthatatlanság Poti
-Találd meg a titkos barlangot; könnyû; 50 coin
-Szerezd meg a Mythic Stone Swordot; nehéz; 200 coin
-Érd el a 7-es szintet;közepes;150 coin
-Találd meg a kincset; közepes; Emerald Sword
-Gyûjtsd össze a 15 darab ércet a bányából; közepes; 50 coin
-Gyûjtsd össze a mindkettõ gyémántot felszerelést; nehéz; 200 coin
+tipus;mennyiseg;feladat nehézsége;jutalom
+ÖlniKis;5;könnyû;Golden Sword
+ÖlniNagy;5;közepes;Emerald Shield
+SzintEler;5;közepes;150 coin
+SzintEler;4;közepes;140 coin
+SzintEler;3;könnyû;130 coin
+GyüjtsÉrc;15;közepes;50 coin
+GyüjtsÉrc;10;könnyû;25 coin
+TeljesitKüldetesKönnyû;10;nehéz;200 coin
+TeljesitKüldetesKönnyü;5;közepes;100 coin

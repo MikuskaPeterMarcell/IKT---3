@@ -39,7 +39,9 @@ class Program
         }
         score = stats.Score;
         hp = stats.Hp;
-        
+
+        Kuldetesek kuldetesek = new(File.ReadAllLines("feladatok.txt"));
+
         LoadMap("falu.txt");
         //DisplayMapAndStats();
         while (true)
