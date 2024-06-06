@@ -221,6 +221,8 @@ class Program
         return string.Join(", ", items);
     }
 
+
+
     static void MovePlayer(int dx, int dy)
     {
         int newX = playerX + dx;
