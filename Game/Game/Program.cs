@@ -298,7 +298,7 @@ class Program
             }
         }
     }
-
+    // Pongrácz Gábor
     static bool FightSmall()
     {
         while (true)
